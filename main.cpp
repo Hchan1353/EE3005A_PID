@@ -1,7 +1,4 @@
-/* Servo motor with Arduino example code. Position and sweep. More info: https://www.makerguides.com/ */
-// Include the servo library:
 #include <Servo.h>
-// Create a new servo object:
 Servo upperservo;
 Servo lowerservo;
 // Define the servo pin:
