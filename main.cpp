@@ -31,18 +31,18 @@ long activate_count = 0;
 long des_activate_count = 0;
 
 //////////////////////////////PID FOR ROLL///////////////////////////
-float roll_PID, pwm_L_F, pwm_L_B, pwm_R_F, pwm_R_B, roll_error, roll_previous_error;
-float roll_pid_p = 0;
-float roll_pid_i = 0;
-float roll_pid_d = 0;
+float lower_PID, pwm_L_F, pwm_L_B, pwm_R_F, pwm_R_B, lower_error, lower_previous_error;
+float lower_pid_p = 0;
+float lower_pid_i = 0;
+float lower_pid_d = 0;
 ///////////////////////////////ROLL PID CONSTANTS////////////////////
-double roll_kp = 1.5; //3.55
-double roll_ki = 0.0; //0.003
-double roll_kd = 0.0; //2.05
-float roll_desired_angle = 0;     //This is the angle in which we whant the
+double lower_kp = 1.5; //3.55
+double lower_ki = 0.0; //0.003
+double lower_kd = 0.0; //2.05
+float lower_desired_angle = 0;     //This is the angle in which we whant the
 
 //////////////////////////////PID FOR PITCH//////////////////////////
-float pitch_PID, pitch_error, pitch_previous_error;
+float upper_PID, upper_error, pitch_previous_error;
 float pitch_pid_p = 0;
 float pitch_pid_i = 0;
 float pitch_pid_d = 0;
@@ -161,76 +161,74 @@ void loop() {
 
 
   /*///////////////////////////P I D///////////////////////////////////*/
-  roll_desired_angle = 0;   //The angle we want the gimbal to stay is 0 and 0 for both axis for now...
+  lower_desired_angle = 0;   //The angle we want the gimbal to stay is 0 and 0 for both axis for now...
   pitch_desired_angle = 0;
 
   /*First calculate the error between the desired angle and
     the real measured angle*/
-  roll_error = Total_angle_x - roll_desired_angle;
-  pitch_error = Total_angle_y - pitch_desired_angle;
+  lower_error = Total_angle_x - lower_desired_angle;
+  upper_error = Total_angle_y - pitch_desired_angle;
   /*Next the proportional value of the PID is just a proportional constant
     multiplied by the error*/
-  roll_pid_p = roll_kp * roll_error;
-  pitch_pid_p = pitch_kp * pitch_error;
+  lower_pid_p = lower_kp * lower_error;
+  pitch_pid_p = pitch_kp * upper_error;
   /*The integral part should only act if we are close to the
     desired position but we want to fine tune the error. That's
     why I've made a if operation for an error between -2 and 2 degree.
     To integrate we just sum the previous integral value with the
     error multiplied by  the integral constant. This will integrate (increase)
     the value each loop till we reach the 0 point*/
-  if (-3 < roll_error < 3)
+  if (-3 < lower_error < 3)
   {
-    roll_pid_i = roll_pid_i + (roll_ki * roll_error);
+    lower_pid_i = lower_pid_i + (lower_ki * lower_error);
   }
-  if (-3 < pitch_error < 3)
+  if (-3 < upper_error < 3)
   {
-    pitch_pid_i = pitch_pid_i + (pitch_ki * pitch_error);
+    pitch_pid_i = pitch_pid_i + (pitch_ki * upper_error);
   }
   /*The last part is the derivate. The derivate acts upon the speed of the error.
     As we know the speed is the amount of error that produced in a certain amount of
     time divided by that time. For taht we will use a variable called previous_error.
     We substract that value from the actual error and divide all by the elapsed time.
     Finnaly we multiply the result by the derivate constant*/
-  roll_pid_d = roll_kd * ((roll_error - roll_previous_error) / elapsedTime);
-  pitch_pid_d = pitch_kd * ((pitch_error - pitch_previous_error) / elapsedTime);
+  lower_pid_d = lower_kd * ((lower_error - lower_previous_error) / elapsedTime);
+  pitch_pid_d = pitch_kd * ((upper_error - pitch_previous_error) / elapsedTime);
   /*The final PID values is the sum of each of this 3 parts*/
-  roll_PID = roll_pid_p + roll_pid_i + roll_pid_d ;
-  pitch_PID = pitch_pid_p + pitch_pid_i + pitch_pid_d ;
+  lower_PID = lower_pid_p + lower_pid_i + lower_pid_d ;
+  upper_PID = pitch_pid_p + pitch_pid_i + pitch_pid_d ;
   /*We know taht the min value of PWM signal is -90 (usingservo.write) and the max is 90. So that
     tells us that the PID value can/s oscilate more than -90 and 90 so we constrain those values below*/
-  if (roll_PID < -90) {
-    roll_PID = -90;
+  if (lower_PID < -90) {
+    lower_PID = -90;
   }
-  if (roll_PID > 90) {
-    roll_PID = 90;
+  if (lower_PID > 90) {
+    lower_PID = 90;
   }
-  if (pitch_PID < -90) {
-    pitch_PID = -90;
+  if (upper_PID < -90) {
+    upper_PID = -90;
   }
-  if (pitch_PID > 90) {
-    pitch_PID = 90;
+  if (upper_PID > 90) {
+    upper_PID = 90;
   }
 
-  roll_previous_error = roll_error;     //Remember to store the previous error.
-  pitch_previous_error = pitch_error;   //Remember to store the previous error.
+  lower_previous_error = lower_error;     //Remember to store the previous error.
+  pitch_previous_error = upper_error;   //Remember to store the previous error.
   
-  PWM_pitch = 90 + pitch_PID;           //Angle for each motor is 90 plus/minus the PID value
-  PWM_roll = 90 + roll_PID;
+  PWM_pitch = 90 + upper_PID;           //Angle for each motor is 90 plus/minus the PID value
+  PWM_roll = 90 + lower_PID;
 
   Serial.print("PID_pitch");
-  Serial.println(pitch_PID);
+  Serial.print(upper_PID);
   Serial.print("\tPID_roll");
-  Serial.println(roll_PID);
+  Serial.println(lower_PID);
+
   Serial.print("pitch_error");
-  Serial.println(pitch_error);
+  Serial.print(upper_error);
   Serial.print("\troll_error");
-  Serial.println(roll_error);
-  Serial.print("pitch_error");
-  Serial.println(pitch_error);
-  Serial.print("\troll_error");
-  Serial.println(PWM_roll);
+  Serial.println(lower_error);
+
   Serial.print("pitch_PWM");
-  Serial.println(pitch_error);
+  Serial.print(upper_error);
   Serial.print("\troll_PWM");
   Serial.println(PWM_roll);
 
