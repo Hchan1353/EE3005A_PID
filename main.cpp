@@ -36,7 +36,7 @@ float roll_pid_p = 0;
 float roll_pid_i = 0;
 float roll_pid_d = 0;
 ///////////////////////////////ROLL PID CONSTANTS////////////////////
-double roll_kp = 2; //3.55
+double roll_kp = 1.5; //3.55
 double roll_ki = 0.0; //0.003
 double roll_kd = 0.0; //2.05
 float roll_desired_angle = 0;     //This is the angle in which we whant the
@@ -47,7 +47,7 @@ float pitch_pid_p = 0;
 float pitch_pid_i = 0;
 float pitch_pid_d = 0;
 ///////////////////////////////PITCH PID CONSTANTS////////////////////
-double pitch_kp = 2; //3.55
+double pitch_kp = 0.9; //3.55
 double pitch_ki = 0.0; //0.003
 double pitch_kd = 0.0; //2.05
 float pitch_desired_angle = 0;     //This is the angle in which we want the gimbal to stay (for now it will be 0) Joystick for future versions
