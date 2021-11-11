@@ -36,10 +36,10 @@ float roll_pid_p = 0;
 float roll_pid_i = 0;
 float roll_pid_d = 0;
 ///////////////////////////////ROLL PID CONSTANTS////////////////////
-double roll_kp = 2.9; //3.55
+double roll_kp = 2; //3.55
 double roll_ki = 0.0; //0.003
 double roll_kd = 0.0; //2.05
-float roll_desired_angle = 30;     //This is the angle in which we whant the
+float roll_desired_angle = 0;     //This is the angle in which we whant the
 
 //////////////////////////////PID FOR PITCH//////////////////////////
 float pitch_PID, pitch_error, pitch_previous_error;
@@ -47,7 +47,7 @@ float pitch_pid_p = 0;
 float pitch_pid_i = 0;
 float pitch_pid_d = 0;
 ///////////////////////////////PITCH PID CONSTANTS////////////////////
-double pitch_kp = 2.5; //3.55
+double pitch_kp = 2; //3.55
 double pitch_ki = 0.0; //0.003
 double pitch_kd = 0.0; //2.05
 float pitch_desired_angle = 0;     //This is the angle in which we want the gimbal to stay (for now it will be 0) Joystick for future versions
@@ -215,7 +215,7 @@ void loop() {
   pitch_previous_error = pitch_error;   //Remember to store the previous error.
   
   PWM_pitch = 90 + pitch_PID;           //Angle for each motor is 90 plus/minus the PID value
-  PWM_roll = 90 - roll_PID;
+  PWM_roll = 90 + roll_PID;
 
   Serial.print("PID_pitch");
   Serial.println(pitch_PID);
@@ -235,7 +235,7 @@ void loop() {
   Serial.println(PWM_roll);
 
   pitch.write(PWM_pitch);               //Finally we write the angle to the servos
-   //roll.write(PWM_roll);
+  roll.write(PWM_roll);
    //roll.write(170);
    //pitch.write(160);
    
