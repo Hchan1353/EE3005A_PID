@@ -1,3 +1,4 @@
+#include <Arduino.h>
 #include <Wire.h>
 #include <Servo.h>
 
@@ -45,7 +46,7 @@ float pitch_PID, pitch_error, pitch_previous_error;
 float pitch_pid_p = 0;
 float pitch_pid_i = 0;
 float pitch_pid_d = 0;
-///////////////////////////////PITCH PID CONSTANTS///////////////////
+///////////////////////////////PITCH PID CONSTANTS////////////////////
 double pitch_kp = 2.5; //3.55
 double pitch_ki = 0.0; //0.003
 double pitch_kd = 0.0; //2.05
@@ -154,8 +155,7 @@ void loop() {
 
   Serial.print("GyroX angle: ");
   Serial.print(Total_angle_x);
-  Serial.print("   |   ");
-  Serial.print("GyroY angle: ");
+  Serial.print("\tGyroY angle: ");
   Serial.println(Total_angle_y);
 
 
@@ -166,8 +166,8 @@ void loop() {
 
   /*First calculate the error between the desired angle and
     the real measured angle*/
-  roll_error = Total_angle_y - roll_desired_angle;
-  pitch_error = Total_angle_x - pitch_desired_angle;
+  roll_error = Total_angle_x - roll_desired_angle;
+  pitch_error = Total_angle_y - pitch_desired_angle;
   /*Next the proportional value of the PID is just a proportional constant
     multiplied by the error*/
   roll_pid_p = roll_kp * roll_error;
@@ -213,18 +213,30 @@ void loop() {
 
   roll_previous_error = roll_error;     //Remember to store the previous error.
   pitch_previous_error = pitch_error;   //Remember to store the previous error.
-  Serial.print("PID_roll");
-  Serial.print(roll_PID);
-  Serial.print("\tPID_pitch");
-  Serial.println(pitch_PID);
-  Serial.print("roll_error");
-  Serial.print(roll_error);
-  Serial.print("\tpitch_error");
-  Serial.println(pitch_error);
+  
   PWM_pitch = 90 + pitch_PID;           //Angle for each motor is 90 plus/minus the PID value
   PWM_roll = 90 - roll_PID;
 
-  //pitch.write(PWM_pitch);               //Finally we write the angle to the servos
-   roll.write(PWM_roll);
-   //roll.write(80);
+  Serial.print("PID_pitch");
+  Serial.println(pitch_PID);
+  Serial.print("\tPID_roll");
+  Serial.println(roll_PID);
+  Serial.print("pitch_error");
+  Serial.println(pitch_error);
+  Serial.print("\troll_error");
+  Serial.println(roll_error);
+  Serial.print("pitch_error");
+  Serial.println(pitch_error);
+  Serial.print("\troll_error");
+  Serial.println(PWM_roll);
+  Serial.print("pitch_PWM");
+  Serial.println(pitch_error);
+  Serial.print("\troll_PWM");
+  Serial.println(PWM_roll);
+
+  pitch.write(PWM_pitch);               //Finally we write the angle to the servos
+   //roll.write(PWM_roll);
+   //roll.write(170);
+   //pitch.write(160);
+   
 }//end of void loop
