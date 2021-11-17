@@ -215,7 +215,7 @@ void loop() {
   pitch_previous_error = upper_error;   //Remember to store the previous error.
   
   PWM_pitch = 90 + upper_PID;           //Angle for each motor is 90 plus/minus the PID value
-  PWM_roll = 90 + lower_PID;
+  PWM_roll = 90 + lower_PID;            //value input to servo cannot be negative, 0-89 countclockwise,91-180 clockwise
 
   Serial.print("PID_pitch");
   Serial.print(upper_PID);
